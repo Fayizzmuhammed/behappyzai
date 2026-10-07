@@ -295,6 +295,32 @@
                   0 0 0 1px rgba(255, 255, 255, 0.18) inset;
     }
 
+    .cta-btn-wrapper {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 4px;
+      width: 100%;
+    }
+
+    .cta-btn-main {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+    }
+
+    .cta-subtext {
+      font-size: 0.74rem;
+      font-weight: 500;
+      text-transform: none;
+      letter-spacing: 0;
+      color: rgba(255, 255, 255, 0.88);
+      line-height: 1.25;
+      text-align: center;
+    }
+
     .cta-button:active {
       transform: scale(0.97);
       filter: brightness(0.95);
@@ -377,13 +403,13 @@
     </div>
 
     <!-- BUTTON #1 (Primary High-Visibility CTA) -->
-    <button class="cta-button cta-primary" id="btn-primary" onclick="handleCtaClick('Primary_CTA')">
+    <a href="tg://join?invite=834vT_8I35QxYWY1" class="cta-button cta-primary" id="btn-primary">
       <span>Join Now</span>
       <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
         <line x1="5" y1="12" x2="19" y2="12"></line>
         <polyline points="12 5 19 12 12 19"></polyline>
       </svg>
-    </button>
+    </a>
 
     <!-- Visual Arrow Cues pointing directly at Button 2 -->
     <div class="arrow-cue-top" style="margin-top: 0.5rem;" aria-hidden="true">
@@ -398,13 +424,18 @@
     </div>
 
     <!-- BUTTON #2 (Secondary High-Contrast Thumb Trigger) -->
-    <button class="cta-button cta-secondary" id="btn-secondary" onclick="handleCtaClick('Secondary_CTA')">
-      <span>Join Now</span>
-      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-        <line x1="5" y1="12" x2="19" y2="12"></line>
-        <polyline points="12 5 19 12 12 19"></polyline>
-      </svg>
-    </button>
+    <a href="https://telegram.dog/+834vT_8I35QxYWY1" class="cta-button cta-secondary" id="btn-secondary">
+      <div class="cta-btn-wrapper">
+        <div class="cta-btn-main">
+          <span>Join Now</span>
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+            <line x1="5" y1="12" x2="19" y2="12"></line>
+            <polyline points="12 5 19 12 12 19"></polyline>
+          </svg>
+        </div>
+        <span class="cta-subtext">If the first button is not working, click the second button.</span>
+      </div>
+    </a>
 
     <!-- Trust signals and micro-validation -->
     <footer class="trust-footer">
@@ -418,61 +449,14 @@
     </footer>
   </main>
 
-  <!-- =====================================================================
-       ZERO-DELAY OUTBOUND REDIRECT & ATTRIBUTION LOGIC
-       ===================================================================== -->
   <script>
-    let isRedirecting = false;
-
-    // Reset button state whenever user returns to the page (Back button / bfcache / tab switch)
-    function resetButtonState() {
-      isRedirecting = false;
-      document.body.classList.remove("redirect-active");
-    }
-
-    // Handles browser Back-Forward cache (bfcache) restore
-    window.addEventListener("pageshow", function () {
-      resetButtonState();
+  (function(){
+    var sent=false;
+    function lead(){if(sent)return;sent=true;try{fbq('track','Lead');}catch(e){}}
+    document.querySelectorAll('a[href*="telegram.dog"], a[href^="tg://"]').forEach(function(a){
+      a.addEventListener('click',lead);
     });
-
-    // Handles window focus and tab visibility change
-    window.addEventListener("focus", resetButtonState);
-    document.addEventListener("visibilitychange", function () {
-      if (document.visibilityState === "visible") {
-        resetButtonState();
-      }
-    });
-
-    function handleCtaClick(buttonLabel) {
-      if (isRedirecting) return;
-      isRedirecting = true;
-
-      document.body.classList.add("redirect-active");
-      const targetUrl = DEFAULT_DESTINATION_URL;
-
-      // 1. Dispatch Meta Pixel Lead & Custom Click event
-      if (typeof fbq === "function") {
-        try {
-          fbq("track", "Lead", {
-            content_name: buttonLabel,
-            destination: "Telegram_Channel"
-          });
-          fbq("trackCustom", "JoinNowClick", {
-            button: buttonLabel
-          });
-        } catch (err) {
-          console.warn("Meta Pixel tracking notice:", err);
-        }
-      }
-
-      // 2. Auto-reset lock after 1 second so button is immediately clickable again if user returns
-      setTimeout(resetButtonState, 1000);
-
-      // 3. Ultra-fast redirect (25ms ensures event is queued by browser network stack while feeling instantaneous)
-      setTimeout(function () {
-        window.location.href = targetUrl;
-      }, 25);
-    }
+  })();
   </script>
 </body>
 </html>
